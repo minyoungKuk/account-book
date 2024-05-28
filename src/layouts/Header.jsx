@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useContext } from "react";
 import styled from "styled-components";
+import AccountContext from "../context/AccountContext";
 
 const StyledHeaderWrap = styled.div`
   width: 100%;
@@ -21,7 +22,9 @@ const StyledHeaderWrap = styled.div`
   }
 `;
 
-function Header({ currentMonth, setCurrentMonth }) {
+function Header() {
+  const { currentMonth, setCurrentMonth } = useContext(AccountContext);
+
   const handlePreviousMonth = () => {
     const prevMonth = new Date(
       currentMonth.getFullYear(),
