@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import AccountForm from "../../components/AccountForm";
 import PieChart from "../../components/PieChart";
+import AccountContext from "../../context/AccountContext";
 
 const AccountFormWrap = styled.div`
   width: 100%;
@@ -129,21 +130,22 @@ const categoryMap = {
   others: "기타",
 };
 
-const HomePage = ({
-  date,
-  category,
-  description,
-  amount,
-  data,
-  currentMonth,
-  setDate,
-  setCategory,
-  setDescription,
-  setAmount,
-  setCurrentMonth,
-  handleSubmit,
-  handleAmountChange,
-}) => {
+const HomePage = () => {
+  const {
+    date,
+    setDate,
+    category,
+    setCategory,
+    description,
+    setDescription,
+    amount,
+    setAmount,
+    data,
+    handleSubmit,
+    handleAmountChange,
+    currentMonth,
+  } = useContext(AccountContext);
+
   const filteredData = data.filter((item) => {
     const itemDate = new Date(item.date);
     return (
