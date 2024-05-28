@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import AccountForm from "../../components/AccountForm";
+import AccountContext from "../../context/AccountContext";
 import Modal from "../../layouts/Modal";
 
 const AccountDetailWrapper = styled.div`
@@ -47,7 +48,9 @@ const ButtonWrapper = styled.div`
   }
 `;
 
-const DetailPage = ({ data, setData }) => {
+const DetailPage = () => {
+  const { data, setData } = useContext(AccountContext);
+
   const { detailId } = useParams();
   const navigate = useNavigate();
   const [selectedData, setSelectedData] = useState(null);
