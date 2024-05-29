@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
 
 const AccountFormListTitle = styled.span`
@@ -10,11 +10,22 @@ const AccountFormListTitle = styled.span`
 `;
 
 const AccountForm = ({ date, category, description, amount, onChange }) => {
+  const dateInputRef = useRef(null);
+
+  useEffect(() => {
+    dateInputRef.current.focus();
+  }, []);
   return (
     <>
       <div>
         <AccountFormListTitle>일자</AccountFormListTitle>
-        <input type="date" name="date" value={date} onChange={onChange} />
+        <input
+          type="date"
+          name="date"
+          value={date}
+          onChange={onChange}
+          ref={dateInputRef}
+        />
       </div>
       <div>
         <AccountFormListTitle>분류</AccountFormListTitle>
