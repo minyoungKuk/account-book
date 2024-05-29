@@ -1,6 +1,7 @@
-import React, { useContext } from "react";
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
-import AccountContext from "../context/AccountContext";
+import { setCurrentMonth } from "../redux/slices/account.slice";
 
 const StyledHeaderWrap = styled.div`
   width: 100%;
@@ -23,15 +24,17 @@ const StyledHeaderWrap = styled.div`
 `;
 
 function Header() {
-  const { currentMonth, setCurrentMonth } = useContext(AccountContext);
+  const dispatch = useDispatch();
+  const currentMonthString = useSelector((state) => state.account.currentMonth);
+  const currentMonth = new Date(currentMonthString);
 
   const handlePreviousMonth = () => {
     const prevMonth = new Date(
       currentMonth.getFullYear(),
       currentMonth.getMonth() - 1,
       1
-    );
-    setCurrentMonth(prevMonth);
+    ).toISOString();
+    dispatch(setCurrentMonth(prevMonth));
   };
 
   const handleNextMonth = () => {
@@ -39,8 +42,8 @@ function Header() {
       currentMonth.getFullYear(),
       currentMonth.getMonth() + 1,
       1
-    );
-    setCurrentMonth(nextMonth);
+    ).toISOString();
+    dispatch(setCurrentMonth(nextMonth));
   };
 
   const monthNames = [

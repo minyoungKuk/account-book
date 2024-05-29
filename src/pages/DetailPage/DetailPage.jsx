@@ -1,8 +1,14 @@
 import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import AccountForm from "../../components/AccountForm";
 import Modal from "../../layouts/Modal";
+import {
+  closeAlertModal,
+  setAlertMessage,
+  setData,
+} from "../../redux/slices/account.slice";
 
 const AccountDetailWrapper = styled.div`
   width: 100%;
@@ -47,13 +53,18 @@ const ButtonWrapper = styled.div`
   }
 `;
 
-const DetailPage = ({ data, setData }) => {
+const DetailPage = () => {
+  const dispatch = useDispatch();
+  const { data, isAlertModalVisible, alertMessage } = useSelector(
+    (prevState) => prevState.account
+  );
+
   const { detailId } = useParams();
   const navigate = useNavigate();
   const [selectedData, setSelectedData] = useState(null);
   const [isConfirmModalVisible, setIsConfirmModalVisible] = useState(false);
-  const [isAlertModalVisible, setIsAlertModalVisible] = useState(false);
-  const [alertMessage, setAlertMessage] = useState("");
+  // const [isAlertModalVisible, setIsAlertModalVisible] = useState(false);
+  // const [alertMessage, setAlertMessage] = useState("");
   const [confirmAction, setConfirmAction] = useState(null);
 
   useEffect(() => {
@@ -66,8 +77,7 @@ const DetailPage = ({ data, setData }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     if (name === "amount" && !/^\d*$/.test(value)) {
-      setAlertMessage("금액란에는 숫자만 입력해 주세요.");
-      setIsAlertModalVisible(true);
+      dispatch(setAlertMessage("금액란에는 숫자만 입력해 주세요."));
     } else {
       setSelectedData({ ...selectedData, [name]: value });
     }
@@ -78,8 +88,8 @@ const DetailPage = ({ data, setData }) => {
       item.id === selectedData.id ? selectedData : item
     );
 
-    localStorage.setItem("accountData", JSON.stringify(updatedData));
-    setData(updatedData);
+    // localStorage.setItem("accountData", JSON.stringify(updatedData));
+    dispatch(setData(updatedData));
     navigate("/");
   };
 
@@ -93,9 +103,9 @@ const DetailPage = ({ data, setData }) => {
     setConfirmAction(null);
   };
 
-  const closeAlertModal = () => {
-    setIsAlertModalVisible(false);
-  };
+  // const closeAlertModal = () => {
+  //   setIsAlertModalVisible(false);
+  // };
 
   const confirmMessage =
     confirmAction === "save"
@@ -104,8 +114,8 @@ const DetailPage = ({ data, setData }) => {
 
   const handleDeleteList = () => {
     const updatedData = data.filter((item) => item.id !== selectedData.id);
-    localStorage.setItem("accountData", JSON.stringify(updatedData));
-    setData(updatedData);
+    // localStorage.setItem("accountData", JSON.stringify(updatedData));
+    dispatch(setData(updatedData));
     navigate("/");
   };
 
@@ -134,9 +144,9 @@ const DetailPage = ({ data, setData }) => {
 
         <Modal
           show={isAlertModalVisible}
-          onClose={closeAlertModal}
+          onClose={() => dispatch(closeAlertModal())}
           message={alertMessage}
-          onConfirm={closeAlertModal}
+          onConfirm={() => dispatch(closeAlertModal())}
         />
       </AccountDetailWrapper>
     )

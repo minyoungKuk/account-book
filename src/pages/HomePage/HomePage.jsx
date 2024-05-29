@@ -1,9 +1,19 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import AccountForm from "../../components/AccountForm";
 import PieChart from "../../components/PieChart";
-import AccountContext from "../../context/AccountContext";
+// import AccountContext from "../../context/AccountContext";
+import { useDispatch, useSelector } from "react-redux";
+import Modal from "../../layouts/Modal";
+import {
+  closeAlertModal,
+  handleAmountChange,
+  handleSubmit,
+  setCategory,
+  setDate,
+  setDescription,
+} from "../../redux/slices/account.slice";
 
 const AccountFormWrap = styled.div`
   width: 100%;
@@ -73,7 +83,7 @@ const TotalAmount = styled.span`
 `;
 
 const List = styled.li`
-  padding: 10px 5px;
+  padding: 15px 5px;
   text-decoration: none;
   border-bottom: 1px solid #e0e7e9;
   transition: all 0.4s ease;
@@ -114,6 +124,8 @@ const ListDate = styled.span`
   display: block;
   font-weight: 600;
   padding-bottom: 4px;
+  text-align: left;
+  padding: 5px 0;
 `;
 
 const ListWrapper = styled.div`
@@ -131,26 +143,27 @@ const categoryMap = {
 };
 
 const HomePage = () => {
+  const dispatch = useDispatch();
+
   const {
     date,
-    setDate,
     category,
-    setCategory,
     description,
-    setDescription,
     amount,
-    setAmount,
     data,
-    handleSubmit,
-    handleAmountChange,
     currentMonth,
-  } = useContext(AccountContext);
+    isAlertModalVisible,
+    alertMessage,
+  } = useSelector((prevState) => prevState.account);
+  const accountData = Array.isArray(data) ? data : [];
 
-  const filteredData = data.filter((item) => {
+  const currentMonthDate = new Date(currentMonth);
+
+  const filteredData = accountData.filter((item) => {
     const itemDate = new Date(item.date);
     return (
-      itemDate.getFullYear() === currentMonth.getFullYear() &&
-      itemDate.getMonth() === currentMonth.getMonth()
+      itemDate.getFullYear() === currentMonthDate.getFullYear() &&
+      itemDate.getMonth() === currentMonthDate.getMonth()
     );
   });
 
@@ -169,18 +182,18 @@ const HomePage = () => {
           amount={amount}
           onChange={(e) => {
             const { name, value } = e.target;
-            if (name === "date") setDate(value);
-            if (name === "category") setCategory(value);
-            if (name === "description") setDescription(value);
-            if (name === "amount") handleAmountChange(e);
+            if (name === "date") dispatch(setDate(value));
+            if (name === "category") dispatch(setCategory(value));
+            if (name === "description") dispatch(setDescription(value));
+            if (name === "amount") dispatch(handleAmountChange(value));
           }}
         />
-        <Button onClick={handleSubmit}> 내역 추가 </Button>
+        <Button onClick={() => dispatch(handleSubmit())}> 내역 추가 </Button>
       </AccountFormWrap>
 
       <AccountViewWrap>
         <AccountListWrap>
-          <p>
+          <p style={{ textAlign: "left", fontWeight: "600" }}>
             월별 내역 {filteredData.length}건 / 전체내역 {data.length}건
           </p>
           <AccountLists>
@@ -202,12 +215,25 @@ const HomePage = () => {
               </List>
             ))}
           </AccountLists>
-          <TotalAmount>-{totalAmount}원</TotalAmount>
+          <TotalAmount>
+            {filteredData.length < 1
+              ? "지출 내역이 없습니다"
+              : `-${totalAmount}원`}
+          </TotalAmount>
         </AccountListWrap>
 
         <PieChartWrapper>
           <PieChart data={filteredData} />
         </PieChartWrapper>
+
+        {isAlertModalVisible && (
+          <Modal
+            show={isAlertModalVisible}
+            onClose={() => dispatch(closeAlertModal())}
+            message={alertMessage}
+            onConfirm={() => dispatch(closeAlertModal())}
+          />
+        )}
       </AccountViewWrap>
     </>
   );

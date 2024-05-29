@@ -1,8 +1,9 @@
+import { Provider } from "react-redux";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import App from "../App";
-import { AccountProvider } from "../context/AccountContext";
 import DetailPage from "../pages/DetailPage/DetailPage";
 import HomePage from "../pages/HomePage/HomePage";
+import store from "../redux/store";
 
 const router = createBrowserRouter([
   {
@@ -22,9 +23,9 @@ const router = createBrowserRouter([
 
 const AppRouter = () => {
   return (
-    <AccountProvider>
+    <Provider store={store}>
       <RouterProvider router={router} />
-    </AccountProvider>
+    </Provider>
   );
 };
 
